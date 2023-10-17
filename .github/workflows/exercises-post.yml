@@ -1,0 +1,32 @@
+name: exercises-post
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  exercises-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup RUST Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install mdBook
+        run: cargo install mdbook
+      - name: Build
+        working-directory: exercises
+        run: mdbook build
+      - name: Deploy Exercises Preview 🚀
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: target/book/
+          umbrella-dir: exercises/pr-preview
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: target/book/ # The folder the action should deploy.
+          target-folder: exercises
+          clean-exclude: pr-preview
